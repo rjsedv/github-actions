@@ -31,6 +31,30 @@ jobs:
            echo Hello, $name!
            echo Actor: ${{github.actor}}
            echo Commited By: ${{github.event.commits[0].author.name}}
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout the branch that triggered the workflow.
+      - name: Checkout
+        uses: actions/checkout@master
+
+      # Run your build step
+      - name: Build
+        run: ./build.sh
+
+      # Deploy using `demurgos/ga-deploy-git`
+      - name: Deploy
+        uses: demurgos/ga-deploy-git@v1
+        with:
+          # Personnal access token with `public_repo` or `repo` permission (required)
+          # It is defined in the `ACCESS_TOKEN` secret.
+          accessToken: ${{ secrets.access_token }}
+          # Directory containing the build artifact to deploy (default: repo root)
+          srcDir: build
+          # Destination repo (default: current repo)
+          destRepo: user/user.github.io
+          # Destination branch (required)
+          destBranch: master
   weather:
     runs-on: ubuntu-latest
     env:
